@@ -72,7 +72,7 @@ module PragmaticTokenizer
       def split_period_after_last_word(token)
         return token unless token.include?(DOT) && token.length > 1
         return token if token.count(DOT) > 1
-        return token if token =~ Regex::ONLY_DOMAIN3 
+        return token if token =~ Regex::ONLY_DOMAIN3
         return token if token.split(DOT).all?{|sub_token| sub_token =~ Regex::DIGIT}
         return token if ((token.index('.') || 0) < (token.index('/') || 0)) && token =~ Regex::SLASH_NOT_URL && ("www." + token) =~ Regex::ONLY_DOMAIN3 # handle (see:) EDGE_CASE_7
         abbreviation = extract_abbreviation(token)
