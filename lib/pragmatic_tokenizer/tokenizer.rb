@@ -8,6 +8,7 @@ require 'unicode'
 
 module PragmaticTokenizer
   class Tokenizer
+    attr_accessor :urls 
 
     PUNCTUATION_OPTIONS       = Set.new(%i[all semi none only]).freeze
     NUMBERS_OPTIONS           = Set.new(%i[all semi none only]).freeze
@@ -111,12 +112,11 @@ module PragmaticTokenizer
     end
 
     private
-
       def process_segment(segment)
         pre_processed = pre_process(segment)
         @tokens       = PostProcessor.new(text: pre_processed, abbreviations: @abbreviations, downcase: @downcase).call
         post_process_tokens
-     end
+      end
 
       def pre_process(segment)
         suffix = " < "
@@ -124,13 +124,22 @@ module PragmaticTokenizer
         shift_segment.gsub!(/<[^<>]*(?=<)/) { |m|  CGI.escapeHTML(m) }
         shift_segment.delete_suffix!(suffix)
         prune = CGI.unescapeHTML(Loofah.fragment(shift_segment).scrub!(:prune).text)
+        url_to_md5!(prune)
         prune
           .extend(PragmaticTokenizer::PreProcessor)
           .pre_process(language: @language_module)
       end
+      
+      def url_to_md5!(text)
+        self.urls = {}
+        URI.extract(text, %w(http https ftp)).each do |url|
+          md5 = Digest::MD5.hexdigest(url)
+          self.urls[md5] = url
+          text.gsub!(Regexp.quote(url), md5)
+        end
+      end
 
       def post_process_tokens
-        remove_by_options!
         process_numbers!
         process_punctuation!
         expand_contractions! if @expand_contractions
@@ -141,9 +150,15 @@ module PragmaticTokenizer
         mentions!            if @mentions
         hashtags!            if @hashtags
         split_long_words!    if @long_word_split
+        md5_to_url!
+        remove_by_options!
         @tokens.reject(&:empty?)
       end
-
+      
+      def md5_to_url!
+        @tokens = @tokens.map { |token| self.urls[token]||token }
+      end
+      
       def expand_contractions!
         @tokens = @tokens.flat_map { |token| expand_token_contraction(token) }
       end

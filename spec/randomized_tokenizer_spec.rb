@@ -122,9 +122,9 @@ describe PragmaticTokenizer do
       # puts "\n\n"
       # byebug unless (tokenized.split.reject(&:empty?)).eql?(check.split.reject(&:empty?))
       t1 = tokenized.split.reject(&:empty?)
-      t2 = check.split.reject(&:empty?)
+      t2 = check.strip.split.reject(&:empty?)
     
-      #byebug unless t1 == t2
+      # byebug unless t1 == t2
       expect(t1).to eq(t2)
     end
   end

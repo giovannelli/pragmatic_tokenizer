@@ -1,3 +1,4 @@
+require 'digest'
 module PragmaticTokenizer
   module PreProcessor
 

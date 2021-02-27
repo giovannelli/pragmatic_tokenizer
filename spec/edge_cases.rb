@@ -11,6 +11,7 @@ TOKENIZER = PragmaticTokenizer::Tokenizer.new(
   EDGE_CASES = [
     ['@BonaFried Tier 1/2 1/2/3 a/b a/b/c a/1 a/1/2 a/1/b 1/a 1/a/2 1/a/b ./. Nurse', ["@BonaFried", "Tier", "1/2", "1/2/3", "a/b", "a/b/c", "a/1", "a/1/2", "a/1/b", "1/a", "1/a/2", "1/a/b", "Nurse"]],
     ['http://www.pippo.it/page1/page2', ["http://www.pippo.it/page1/page2"]],
+    ['http://www.pippo.it/page1/page2?foo=bar&foo$bar&foo!$&/(test)&%#', ["http://www.pippo.it/page1/page2?foo=bar&foo$bar&foo!$&/(test)&"]],
     ['https://t.co/sBxuC8iS34', ['https://t.co/sBxuC8iS34']],
     ['/testword', ['testword']],
     ['testword/', ['testword']],
